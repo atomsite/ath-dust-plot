@@ -1,0 +1,64 @@
+pgen:    pgen
+prefix:  2dxy
+cmap:    inferno
+xyunits: au
+# xmin:    -10
+# xmax:    +10
+# ymin:    -10
+# ymax:    +10
+# Image output variables
+title:          Dust Cooling Test
+subtitle:       $a_i = 5 \times 10^{-3} \mu m$
+showtime:       true # Show current simulation time or not
+tunits:         yr   # Units to display time if showtime is true
+extension:      png  # Extension of output plot, png recommended
+dpi:            300  # DPI of plot, if using a raster file
+contourlevels:  512  # Number of contour levels, default = 64
+plotheight:     5    # Plot height in inches 
+plotwidth:      5    # Plot width in inches
+writetofolders: true # Create individual folders and write to them
+
+# Quantities to plot, each one is individually controllable
+plots:
+  - quantity: rho
+    filename: density
+    label:    $\rho_G$ $(g/cm^3)$
+    log:      true
+    zmin:     -25
+    zmax:     -16
+    contour:  false
+  - quantity: press
+    filename: pressure
+    label:    $P_G$ $(dyn/cm^2)$
+    log:      true
+    # zmin:     -10
+    # zmax:     -5
+    contour:  false
+  - quantity: r1
+    filename: z
+    label:    Dust/Gas mass ratio 
+    log:      true
+    zmin:     -6
+    zmax:     -1
+    contour:  false
+  # - quantity: r2
+  #   filename: a
+  #   label:    Grain radius ($\mu$ m)
+  #   log:      true
+  #   contour:  false
+  - quantity: temp
+    filename: temp
+    label:    Temperature (K)
+    log:      true
+    zmin:     3
+    zmax:     8
+    contour:  false
+  - quantity: ke
+    label:    $E_k/\rho$ $(erg/cm^3)$
+    log:      true
+    contour:  false
+  # - quantity: rhod
+  #   filename: dustdensity
+  #   label:    $\rho_D$ $(g/cm^3)$
+  #   log:      true
+  #   contour:  false

@@ -1,0 +1,17 @@
+pgen: pgen
+prefix: 2dxy
+cmap: inferno
+xyunits: au
+xmin: -5e15
+xmax: +5e15
+ymin: -5e15
+ymax: +5e15
+# Image output variables
+extension:      png  # Extension of output plot
+dpi:            150  # DPI of plot, if using a raster file
+plotheight:     5    # Plot height in inches 
+plotwidth:      5    # Plot width in inches
+writetofolders: true # Create individual folders and write to them
+
+plots:
+  - quantity: avga
