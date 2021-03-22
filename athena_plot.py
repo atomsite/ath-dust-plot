@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import yaml
 import glob
@@ -5,13 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from astropy import constants
 from matplotlib.colors import LogNorm
-
 from os import mkdir
-
 from matplotlib import ticker
-
 import athena_read
-
 from math import floor,ceil
 
 class Star:
@@ -504,6 +502,9 @@ def main(**kwargs):
         zmintri = zmin
         zmaxtri = zmax
 
+      plt.figure(figsize=(CommonPlot.plotwidth,CommonPlot.plotheight))
+      ax = plt.gca()
+      ax.set_aspect(1)
       # PERFORM PLOTTING
       if log:
         plt.tricontourf(xdata,ydata,zdata,

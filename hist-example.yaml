@@ -1,17 +1,80 @@
-pgen: pgen
-prefix: 2dxy
-cmap: inferno
-xyunits: au
-xmin: -5e15
-xmax: +5e15
-ymin: -5e15
-ymax: +5e15
+pgen:    pgen        # Problem file name
+prefix:  hst         # Prefix for files to plot
+# xmin:    -10         # Min x limit (in scaled unit)
+# xmax:    +10         # Max x limit (in scaled unit)
+# ymin:    -10         # Min y limit (in scaled unit)
+# ymax:    +10         # Max y limit (in scaled unit)
 # Image output variables
-extension:      png  # Extension of output plot
-dpi:            150  # DPI of plot, if using a raster file
+title:          Dust Cooling Test
+subtitle:       $a_i = 5 \times 10^{-3} \mu m$
+
+xquantity:      time
+xscale:         3.1688765e-08
+xlabel:         Time
+xunit:          Yr
+
+extension:      pdf  # Extension of output plot, png recommended
+dpi:            300  # DPI of plot, if using a raster file
 plotheight:     5    # Plot height in inches 
 plotwidth:      5    # Plot width in inches
-writetofolders: true # Create individual folders and write to them
+writetofolders: true # Create folder called hst and saves plots in there
 
+# Quantities to plot, each one is individually controllable
 plots:
-  - quantity: avga
+  - quantity:  mass
+    mode:      eval   
+    filename:  mass
+    ylabel:    $m_G$
+    yunit:     $M_\odot$
+    yscale:    5.0291442e-34
+    log:       true
+ 
+  - quantity:  phase
+    filename:  phase
+    ylabel:    Phase
+    log:       false
+ 
+  - quantity:  dmdustdt_WCR
+    filename:  dust_rate_wcr
+    ylabel:    $dm_D/dt$
+    yunit:     $M_\odot$ / Yr
+    yscale:    1.5870433e-26
+ 
+  - quantity:  dmdust_WCR_dt_created ; dmdust_WCR_dt_lost
+    qlabels:   ${dm/dt}_{created}$   ; ${dm/dt}_{lost}$
+    filename:  dust_rate_comparison
+    ylabel:    $dm_D/dt$
+    yunit:     $M_\odot$ / Yr
+    multiplot: false # Do not plot separately
+    yscale:    1.5870433e-26
+    log:       true
+ 
+  - quantity:  dust_WCR     ; dust_TOTAL
+    qlabels:   $m_D$ in WCR ; $m_D$ total
+    ylabel:    $M_D$
+    filename:  dust_wcr_versus_tot
+    log:       true
+ 
+  - quantity:  dust_WCR / dust_TOTAL
+    ylabel:    $m_{D,WCR}$/$m_{D,tot}$
+    filename:  dust_wcr_tot_ratio
+    log:       false
+ 
+  - quantity:  scalar1 / mass
+    ylabel:    $\rho_G / \rho_D$
+    filename:  avg_z
+    log:       true
+ 
+  - quantity:  scalar2 / mass
+    ylabel:    $\bar a$
+    yunit:     $\mu$m
+    filename:  avg_a
+    log:       false
+
+  - quantity:  scalar1
+    ylabel:    $M_D$
+    yunit:     $M_\odot$
+    yscale:    5.0291442e-34
+    filename:  m_dust
+    log:       true
+   
