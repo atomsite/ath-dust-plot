@@ -6,6 +6,7 @@ import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
+import os
 
 class Simulation:
   """
@@ -27,10 +28,24 @@ class Simulation:
                        or crashed at some point and were restarted
   """
   def __init__(self,filename):
-    self.pgen         = readProblemFile(filename)
+
+    # Atrocious text parser, finding the root directory for each filename
+    if os.path.exists(filename):
+      abspath = os.path.abspath(filename)
+      self.dir = ""
+      for n in abspath.split("/")[:-1]:
+        if len(n) > 0:
+          self.dir += ("/"+n)
+    else:
+      print("Shit busted")
+      sys.exit()
+
+    self.absfilename  = self.dir + "/" + filename
+    self.pgen         = readProblemFile(self.absfilename)
     self.problem_ID   = self.pgen["job"]["problem_id"]
     history_file_name = self.problem_ID+".hst"
-    self.data         = readData(history_file_name)
+    self.absprobname  = self.dir + "/" + history_file_name
+    self.data         = readData(self.absprobname)
     # Assing a label to the simulation, can be manually entered in the <comment> block
     # of the pgen file, if not it will use the problem_ID cariable in the <job> block
     if "label" in self.pgen["comment"]:
@@ -224,56 +239,76 @@ def main(**kwargs):
   for filename in pgen_filenames:
     # Each simulation stored in the form of a class containing data and headers
     sims.append(Simulation(filename))
-
   # Configure global plotting parameters (figure size, etc.)
   plotheight = defineParameter(config,"plotheight",6)
   plotwidth  = defineParameter(config,"plotwidth",5)
   dpi        = defineParameter(config,"dpi",150)
   extension  = defineParameter(config,"extension","png")
-
-  # Enable LaTeX plotting backend
+  # Enable LaTeX plotting backend, requires TeXLive to be installed
   plt.rcParams.update({
       "text.usetex": True,
       "font.family": "serif",
   })
   # Process each individiual plot, overlaying each one
   for plot in config["plots"]:
+    # Generate filename
+    filename = ""
+    # Add directory to filename
+    if kwargs["dir"] != None:
+      if os.path.exists(kwargs["dir"]):
+        filename += kwargs["dir"]+"/"
+      else:
+        print("Directory does not exist!")
+        sys.exit()
+    # Add prefix to filename
+    if kwargs["prefix"] != None:
+        filename += kwargs["prefix"] + "."
+    # Add quantity name to filename, or use custom name
+    filename += defineParameter(plot,"filename",plot["quantity"])
+    # Add extension to filename
+    filename += "." + defineParameter(config,"extension","png")
+    # Generate axes labels
+    # X label
+    plot_xlabel = config["xlabel"]
+    xunit = defineParameter(config,"xunit")
+    if xunit != None:
+      plot_xlabel = "{0} ({1})".format(plot_xlabel,xunit)
+    # Y label
+    plot_ylabel = plot["ylabel"]
+    yunit = defineParameter(plot,"yunit")
+    if yunit != None:
+      plot_ylabel = "{0} ({1})".format(plot_ylabel,yunit)
+    # Establish plotting environment
+    plt.figure(figsize=(plotwidth,plotheight),dpi=dpi)
+    plt.grid(True,which="both",ls="dotted")
+    plt.xlabel(plot_xlabel)
+    plt.ylabel(plot_ylabel)
+    # Set log scale if needed
+    islog = defineParameter(plot,"log",False)
+    if islog:
+      plt.yscale("log")
+    # Loop through all sims, plotting all data
     for sim in sims:
+      # Read data for particular sim
       plot_ydata,plot_labels = evalQuantity(plot,sim)
-      # Generate x and y axes labels
-      # X label
-      plot_xlabel = config["xlabel"]
-      xunit = defineParameter(config,"xunit")
-      if xunit != None:
-        plot_xlabel = "{0} ({1})".format(plot_xlabel,xunit)
-      # Y label
-      plot_ylabel = plot["ylabel"]
-      yunit = defineParameter(plot,"yunit")
-      if yunit != None:
-        plot_ylabel = "{0} ({1})".format(plot_ylabel,yunit)
       # Get x axis data
-      xquantity = defineParameter(config,"xquantity","time")
+      xquantity  = defineParameter(config,"xquantity","time")
       plot_xdata = sim.data[xquantity]
       # Scale x and y axes
-      xscale = defineParameter(plot,"xscale",1.0)
+      xscale = defineParameter(config,"xscale",1.0)
       yscale = defineParameter(plot,"yscale",1.0)
-      # Establish plotting environment
-      plt.figure(figsize=(plotwidth,plotheight),dpi=dpi)
+      # Plot data, two different plot calls depending on whether plots are overlaid or not
       for n in range(len(plot_ydata)):
         if plot_labels != None:
           plt.plot(plot_xdata*xscale,plot_ydata[n]*yscale,label=plot_labels[n])
         else:
           plt.plot(plot_xdata*xscale,plot_ydata[n]*yscale,label=sim.label)
-      plt.ylabel(plot_ylabel)
-      plt.xlabel(plot_xlabel)
-      plt.grid(True,which="both",ls="dotted")
-      plt.legend()
-      if "log" in plot:
-        if plot["log"] == True:
-          plt.yscale("log")
-      plt.savefig("{0}.{1}".format(plot["filename"],extension),
-                  bbox_inches="tight")
-      print("Finished {}".format(plot["filename"]))
+    # Finish up figure and save
+    plt.legend()
+    plt.savefig(filename,
+                bbox_inches="tight")
+    # Confirmation that plot has finished
+    print("> Finished {}".format(plot["filename"]))
   return
 
 
@@ -284,5 +319,13 @@ if __name__ == "__main__":
   parser.add_argument("pgen_files",
                       nargs="*",
                       help="Filenames of pgen files, if left blank, program will attempt to find any history files in current folder.")
+  parser.add_argument("-p",
+                      "--prefix",
+                      type=str,
+                      help="Add prefix to filename for plot outputs, by default does not use a prefix, prefix ammended in the form of foo.bar.ext, by default bar.ext where bar is the plot name derived from the config file.")
+  parser.add_argument("-d",
+                      "--dir",
+                      type=str,
+                      help="Save to directory, by default uses current working directory.")
   args = parser.parse_args()
   main(**vars(args))

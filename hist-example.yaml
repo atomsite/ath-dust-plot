@@ -34,15 +34,8 @@ plots:
     ylabel:    Phase
     log:       false
  
-  - quantity:  dmdustdt_WCR
-    filename:  dust_rate_wcr
-    ylabel:    $dm_D/dt$
-    yunit:     $M_\odot$ / Yr
-    yscale:    1.5870433e-26
- 
-  - quantity:  dmdust_WCR_dt_created ; dmdust_WCR_dt_lost
-    qlabels:   ${dm/dt}_{created}$   ; ${dm/dt}_{lost}$
-    filename:  dust_rate_comparison
+  - quantity:  dmdust_WCR_dt_created
+    filename:  dust_rate
     ylabel:    $dm_D/dt$
     yunit:     $M_\odot$ / Yr
     multiplot: false # Do not plot separately
