@@ -39,9 +39,9 @@ class Simulation:
     else:
       print("Shit busted")
       sys.exit()
-
-    self.absfilename  = self.dir + "/" + filename
-    self.pgen         = readProblemFile(self.absfilename)
+    self.pgenname     = abspath.split("/")[-1]
+    self.abspgenname  = self.dir + "/" + self.pgenname
+    self.pgen         = readProblemFile(self.abspgenname)
     self.problem_ID   = self.pgen["job"]["problem_id"]
     history_file_name = self.problem_ID+".hst"
     self.absprobname  = self.dir + "/" + history_file_name
@@ -313,7 +313,7 @@ def main(**kwargs):
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(description="Process 2D and hst data from a folder of Athena outputs.\nPositional arguments and flags can  be used, if all arguments are left blank, a config file will instead be used.")
+  parser = argparse.ArgumentParser(description="Process 2D and hst data from a folder of Athena outputs.\nRequires a config file and a positional argument of at least one config file, additional prefixes and directories can also be added")
   parser.add_argument("config_file",
                        help="name of yaml config file to be used.")
   parser.add_argument("pgen_files",
