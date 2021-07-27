@@ -11,11 +11,13 @@ from os import mkdir
 from matplotlib import ticker
 import athena_read
 from math import floor,ceil
+import athenaplotlib as ath
 
 class Star:
   def __init__(self, problemFile, windno):
     self.mDot = float(problemFile["mdot"+str(windno)])
     self.vInf = float(problemFile["vinf"+str(windno)])
+    self.period = float(problemFile["period"])
     self.avgMass = calculateAvgMass(problemFile,windno)
 
 class CommonPlotting:
@@ -396,6 +398,7 @@ def main(**kwargs):
     n = kwargs["nfile"]
     n = str(n).zfill(5)
     dataFiles = glob.glob(problemID+".2dxy."+n+".athdf")
+  
   if len(dataFiles) == 0:
     print("!!! Program was not able to find any datafiles in folder!")
     print("    Check to see if input string is correct, or if files are present in folder!")
@@ -413,6 +416,28 @@ def main(**kwargs):
     # Import entire dataset, without using interpolation step, triangulation of scattered
     # points is used instead
     data = athena_read.athdf(file,raw = True)
+
+    # If search by phase or search by time is active, check phase of file
+    foundrightfile = False
+    if kwargs["phase"] != None:
+      file_phase = data["Time"] / WR.period
+      if kwargs["phase"] < file_phase:  
+        print("Found file with appropriate phase!")
+        print("> Filename = {}".format(file))
+        print("> Phase    = {}".format(file_phase))
+        foundrightfile = True
+      else:
+        continue
+    if kwargs["time"] != None:
+      file_time = data["Time"] * CommonPlot.tscale
+      if kwargs["time"] < file_time:
+        print("Found file with appropriate time!")
+        print("> Filename = {}".format(file))
+        print("> Time     = {}".format(file_time))
+        foundrightfile = True
+      else:
+        continue
+
     # Scale x y and z axes, this is done here as there are fewer values to calculate
     # and does not have to be performed recursively
     data["x1v"] *= CommonPlot.xyscale
@@ -446,6 +471,10 @@ def main(**kwargs):
       if "subtitle" in config:
         title += "\n"
         title += r"{}".format(config["subtitle"])
+      else:
+        if "label" in problemFile["comment"]:
+          title += "\n"
+          title += r"{}".format(problemFile["comment"])
       if "showtime" in config:
         if config["showtime"]:
           time = data["Time"] * CommonPlot.tscale
@@ -455,6 +484,14 @@ def main(**kwargs):
           else:
             title += ", " 
           title = "{0}t = {1:.3f} {2}".format(title,time,tlabel)
+      if "showphase" in config:
+        if config["showphase"]:
+          phase = data["Time"] / WR.period
+          if "subtitle" not in config:
+            title += "\n"
+          else:
+            title += ", "
+          title += "{0},Phase = {1:.3f}".format(title,phase)
       # Import the associated data into three contiguous arrays from meshblocks
       xdata,ydata,zdata = reduceData(data,quant)
       # Scale axes automatically or using predefined min and max
@@ -527,6 +564,10 @@ def main(**kwargs):
       plt.savefig(exportFilename,dpi=CommonPlot.dpi)
       plt.clf()
       print(" + Finished {}".format(quant))
+
+      if foundrightfile == True:
+        break
+
     print(" ! Finished all plots of {}!".format(file))
 
 if __name__ == "__main__":
@@ -538,5 +579,15 @@ if __name__ == "__main__":
                       type=int,
                       default=None,
                       help="ID number of data file to process, if left blank, all files in folder will be processed, using this allows for easier parallelisation on SGE submission scripts.")
+  parser.add_argument("-t",
+                      "--time",
+                      type=float,
+                      default=None,
+                      help="Time of data file to process, if left blank, all files will be processed instead. Useful for comparisons of similar orbits.")
+  parser.add_argument("-p",
+                      "--phase",
+                      type=float,
+                      default=None,
+                      help="Phase (time/period) of data file to process, if left blank, all files will be processed instead. Useful for comparisons of differing orbits.")
   args = parser.parse_args()
   main(**vars(args))

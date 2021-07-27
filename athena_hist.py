@@ -243,7 +243,6 @@ def main(**kwargs):
   plotheight = defineParameter(config,"plotheight",6)
   plotwidth  = defineParameter(config,"plotwidth",5)
   dpi        = defineParameter(config,"dpi",150)
-  extension  = defineParameter(config,"extension","png")
   # Enable LaTeX plotting backend, requires TeXLive to be installed
   plt.rcParams.update({
       "text.usetex": True,
@@ -297,6 +296,10 @@ def main(**kwargs):
       # Scale x and y axes
       xscale = defineParameter(config,"xscale",1.0)
       yscale = defineParameter(plot,"yscale",1.0)
+      # Define limits for parameters
+      if config["xlim"] != None:
+        xlim = float(config["xlim"])
+        plt.xlim(0,xlim)
       # Plot data, two different plot calls depending on whether plots are overlaid or not
       for n in range(len(plot_ydata)):
         if plot_labels != None:

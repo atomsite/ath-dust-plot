@@ -1,0 +1,65 @@
+
+
+xyscale:        6.6845871e-14
+xylabel:        Distance
+xyunit:         AU
+
+centerpoint:    barycenter # Centerpoint, position to measure distance from, can be apex, barycenter or WR
+
+extension:      png  # Extension of output plot, png recommended
+dpi:            300  # DPI of plot, if using a raster file, mpl_scatter uses a raster
+plotheight:     5    # Plot height in inches 
+plotwidth:      5    # Plot width in inches
+writetofolders: true # Create folder called hst and saves plots in there
+
+colourmap:      inferno
+contourlevels:  128
+
+overlay_alpha:  0.5  # Transparency of non WCR sector of program
+
+wcr_method: density
+wcr_scale:  1.1
+
+
+# Quantities to plot, each one is individually controllable
+plots:
+  - quantity:  rho
+    mode:      eval   
+    filename:  density
+    label:     $\rho_G$
+    unit:      g cm$^{-3}$
+    log:       true
+    zmin:      -25
+    zmax:      -16
+  # - quantity: r0
+  #   filename: col
+  #   label:    Wind Colour
+  #   log:      false
+  #   zmin:     0
+  #   zmax:     1
+  - quantity: r1
+    filename: z
+    label:    Dust/Gas mass ratio 
+    log:      true
+    zmin:     -6
+    zmax:     -1
+  # - quantity: temp
+  #   filename: temp
+  #   label:    Temperature
+  #   unit:     K
+  #   zmin:     3
+  #   zmax:     9
+  #   log:      true
+  - quantity: rhod
+    filename: rhoD
+    zmin:     -28
+    zmax:     -20
+    label:    $\rho_D$
+    unit:     g cm$^{-3}$
+    log:      true
+  # - quantity: r2
+  #   filename: a
+  #   label:    Grain radius (micron)
+  #   log:      true
+  #   zmin:     -4
+  #   zmax:     +1
