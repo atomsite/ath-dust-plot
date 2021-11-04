@@ -187,7 +187,7 @@ def readData(filename):
     data = maskData(data)
   return data
 
-def evalQuantity(plot,sim):
+def evalQuantity(plot,sim_data):
   """
   Evaluate the quantity of plot data
   This plotting program allows for arbitrary mathematical operations in the config
@@ -195,7 +195,6 @@ def evalQuantity(plot,sim):
   Multiple equations are allowed for each plot, allowing for easy comparative
   operations, each evaluation must be separated with a semicolon (";")
   """
-  sim_data = sim.data
   # Split quantities up by semicolon
   evals  = plot["quantity"].split(";") 
   if "qlabels" in plot:

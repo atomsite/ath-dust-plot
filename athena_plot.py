@@ -11,7 +11,7 @@ from os import mkdir
 from matplotlib import ticker
 import athena_read
 from math import floor,ceil
-import athenaplotlib as ath
+# import athenaplotlib as ath
 
 class Star:
   def __init__(self, problemFile, windno):
@@ -250,6 +250,10 @@ def calculateTemperature(data,stars):
   """
   kboltz = 1.380658e-16
   # Calculate average mass of particles in cell
+
+  stars[0].avgMass = 1.67e-24
+  stars[1].avgMass = 1.67e-24
+  
   colGrid = data["r0"]
   muGrid  = (stars[0].avgMass * colGrid) + (stars[1].avgMass * (1 - colGrid))
   tempGrid = (data["press"] * muGrid) / (data["rho"] * kboltz)
@@ -407,7 +411,10 @@ def main(**kwargs):
   if CommonPlot.writetofolders:
     makeFolders(config)
 
-
+  plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "serif"
+  })
 
   # PROCESS DATA
   # Loop through data files
@@ -526,14 +533,14 @@ def main(**kwargs):
         zmaxtri = 10**zmax
         zdata = np.clip(zdata,zmintri,zmaxtri)
       else:
-        if "e" not in str(zmin).lower():
-          print(" ! Warning: zmin in logarithmic form")
-          print(" ! Converting zmin from {0} to {1}".format(zmin,10**zmin))
-          zmin = 10**zmin
-        if "e" not in str(zmax).lower():
-          print(" ! Warning: zmax in logarithmic form")
-          print(" ! Converting zmax from {0} to {1}".format(zmax,10**zmax))
-          zmax = 10**zmax
+        # if "e" not in str(zmin).lower():
+        #   print(" ! Warning: zmin in logarithmic form")
+        #   print(" ! Converting zmin from {0} to {1}".format(zmin,10**zmin))
+        #   zmin = 10**zmin
+        # if "e" not in str(zmax).lower():
+        #   print(" ! Warning: zmax in logarithmic form")
+        #   print(" ! Converting zmax from {0} to {1}".format(zmax,10**zmax))
+        #   zmax = 10**zmax
         lcont = np.linspace(zmin,zmax,CommonPlot.contourLevels)
         lcbar = np.linspace(zmin,zmax,6)
         zmintri = zmin
@@ -544,15 +551,16 @@ def main(**kwargs):
       ax.set_aspect(1)
       # PERFORM PLOTTING
       if log:
-        plt.tricontourf(xdata,ydata,zdata,
+        cs = plt.tricontourf(xdata,ydata,zdata,
                         levels=lcont,
                         norm=LogNorm(vmin=zmintri,vmax=zmaxtri),
                         cmap=CommonPlot.cmap)
       else:
-        plt.tricontourf(xdata,ydata,zdata,
+        cs = plt.tricontourf(xdata,ydata,zdata,
                         levels=lcont,
                         cmap=CommonPlot.cmap)
-
+      for c in cs.collections:
+        c.set_rasterized(True)
 
       plt.colorbar(label=r"{}".format(plot["label"]),
                    ticks=lcbar)
@@ -561,7 +569,7 @@ def main(**kwargs):
       plt.xlim([CommonPlot.xmin,CommonPlot.xmax])
       plt.ylim([CommonPlot.ymin,CommonPlot.ymax])
       plt.title(title)
-      plt.savefig(exportFilename,dpi=CommonPlot.dpi)
+      plt.savefig(exportFilename,dpi=CommonPlot.dpi,bbox_inches="tight")
       plt.clf()
       print(" + Finished {}".format(quant))
 

@@ -13,7 +13,7 @@ xscale:         3.1688765e-08
 xlabel:         Time
 xunit:          Yr
 
-extension:      pdf  # Extension of output plot, png recommended
+extension:      gp  # Extension of output plot, pdf recommended, optional use case is gp, which saves a .dat file and a gnuplot file for plotting
 dpi:            300  # DPI of plot, if using a raster file
 plotheight:     5    # Plot height in inches 
 plotwidth:      5    # Plot width in inches

@@ -1,0 +1,36 @@
+xquantity:      time # Quantity to use in x data
+xscale:         3.1688765e-08 # Scale of plot from original data
+xlabel:         Time # X label of all plots in series
+xunit:          yr   # X label unit of all plots in series
+plotheight:     5    # Plot height in inches 
+plotwidth:      3    # Plot width in inches
+palette:        "default.pal" # Filename of palette file
+
+# Quantities to plot, each one is individually controllable
+plots:
+  - quantity:  dmdust_WCR_dt_created
+    filename:  dust_rate
+    ylabel:    $dm_D/dt$
+    yunit:     $M_\odot$ / Yr
+    yscale:    1.5870433e-26
+    log:       true
+  - quantity:  dust_WCR / dust_TOTAL
+    ylabel:    $m_{D,WCR}$/$m_{D,tot}$
+    filename:  dust_wcr_tot_ratio
+    log:       false
+  - quantity:  scalar1 / mass
+    ylabel:    $\rho_G / \rho_D$
+    filename:  avg_z
+    log:       true
+  - quantity:  scalar2 / mass
+    ylabel:    $\bar a$
+    yunit:     $\mu$m
+    filename:  avg_a
+    log:       false
+  - quantity:  scalar1
+    ylabel:    $M_D$
+    yunit:     $M_\odot$
+    yscale:    5.0291442e-34
+    filename:  m_dust
+    log:       true
+   
